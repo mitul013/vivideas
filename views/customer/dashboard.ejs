@@ -1,0 +1,71 @@
+<h1 class="mt-4">Dashboard</h1>
+<p class="lead mb-3">Welcome User</p>
+<a href="/users/logout" class="btn btn-secondary">Logout</a>
+
+<div class="col-md-4 m-auto">
+    <div class="card card-body">
+        <h1 class="text-center mb-3">
+            <i class="fas fa-shapes"></i> Find By Unique Code
+        </h1>
+
+        <div class="form-group">
+            <label for="name">Unique Code</label>
+            <input type="code" id="code" name="code" class="form-control" placeholder="Enter unique Code"
+                value="<%= typeof name != 'undefined' ? name : '' %>" />
+        </div>
+        <button class="btn btn-primary btn-block" onclick="getDetails()">
+            Find Details
+        </button>
+    </div>
+</div>
+
+<div id="details">
+
+
+</div>
+
+
+<script>
+    function getDetails() {
+        let code = document.getElementById("code").value;
+        let [id, number] = code.split('$');
+        console.log(id, number)
+        let url = '/customer/details/'+id+'/'+number
+        console.log(url);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                let details = document.getElementById('details')
+                let detailsBody = document.getElementById('detailsBody')
+                if (data.error!=null) {
+                    details.innerHTML = '<p><b> Please enter valid unique Code </b></p>'
+                }
+                else {
+                    let row = `<table class="table mt-3" id="productList">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Product Id</th>
+                                            <th>Name</th>
+                                            <th>Image</th>
+                                            <th>Batch No</th>
+                                            <th>MFG</th>
+                                            <th>EXP</th>
+                                        </tr>
+                                    </thead>
+                                 <tbody id="detailsBody">`
+                    row += `<tr>
+                                <th>${data.productId}</th>
+                                <th>${data.productName}</th>
+                                <th>${data.batchNumber}</th>
+                                <td><img src='uploads/${data.ProductImage}' height=50 width=50/></td>
+                                <th>${data.mfg.substring(10)}</th>
+                                <th>${data.exp.substring(10)}</th>
+                            </tr>`
+                            details.innerHTML = row + `</tbody></table>`
+                }
+                
+            }).catch(err => console.log(err));
+    }
+
+</script>

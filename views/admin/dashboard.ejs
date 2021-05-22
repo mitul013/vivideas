@@ -1,0 +1,131 @@
+<h1 class="mt-4">Dashboard</h1>
+<p class="lead mb-3">Welcome User</p>
+<a href="/admin/product/create" class="btn btn-secondary">Create Product</a>
+<a href="/admin/batch/create" class="btn btn-secondary">Create Batch</a>
+<button class="btn btn-secondary" onclick="fetchProducts()">Show Products</button>
+<button class="btn btn-secondary" onclick="fetchBatches()">Show Batches</button>
+<a href="/users/logout" class="btn btn-secondary">logOut</a>
+<%- include ('../partials/messages.ejs') %>
+
+    <table class="table mt-3" id="productList">
+        <thead class="thead-dark">
+            <tr>
+                <th>Product Id</th>
+                <th>Name</th>
+                <th>Image</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- <tr>
+        <td>John</td>
+        <td>Doe</td>
+        <td>john@example.com</td>
+      </tr> -->
+
+        </tbody>
+    </table>
+
+    <script>
+        window.onload = function () {
+
+
+            fetch('/admin/products')
+                .then(response => response.json())
+                .then(data => {
+                    makeList(data, 'Products')
+                }).catch(err => console.log(err));
+        }
+
+        function fetchProducts() {
+            fetch('/admin/products')
+                .then(response => response.json())
+                .then(data => {
+                    makeList(data, 'Products')
+                }).catch(err => console.log(err));
+        }
+
+        function fetchBatches() {
+            fetch('/admin/batches')
+                .then(response => response.json())
+                .then(data => {
+                    makeList(data, 'Batches')
+                }).catch(err => console.log(err));
+        }
+
+        function makeList(data, title) {
+
+            let thead = `<thead class="thead-dark" >
+                             <tr>
+                                <th>Product Id</th>
+                                <th>Name</th>
+                                <th>Image</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>`
+
+            if (title != 'Products') {
+                thead = `<thead class="thead-dark" >
+                             <tr>
+                                <th>Batch Number</th>
+                                <th>Product Id</th>
+                                <th>No of Codes</th>
+                                <th>mfg</th>
+                                <th>exp</th>
+                                <th>Download</th>
+                            </tr>
+                        </thead>`
+            }
+
+            let rows = thead + '<tbody>'
+
+            if (title === 'Products') {
+                for (let i = 0; i < data.length; ++i) {
+                    rows += `<tr>
+                        <td>${data[i].productId}</td>
+                        <td>${data[i].productName}</td>
+                        <td><img src='uploads/${data[i].productImage}' height=50 width=50/></td>
+                        <td>Edit</td>
+                        <td><button class="btn btn-secondary" onclick=deleteProduct('${data[i]._id}')>Delete</button></td>
+                    </tr>`
+                }
+            }
+            else {
+                for (let i = 0; i < data.length; ++i) {
+                    rows += `<tr>
+                        <td>${data[i].batchNumber}</td>
+                        <td>${data[i].productId}</td>
+                        <td>${data[i].noOfCode}</td>
+                        <td>${data[i].mfg}</td>
+                        <td>${data[i].exp}</td>
+                        <td><a href="/admin/batch/getCodes/${data[i]._id}" target="_blank" class="btn btn-secondary">Show codes</a></td>
+                    </tr>`
+                }
+            }
+            document.getElementById('productList').innerHTML = rows + '</tbody>'
+        }
+
+        function deleteProduct(id) {
+
+            fetch('/admin/product/delete/' + id, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: null
+            }).then(data => {
+                console.log(data);
+                location.reload(true);
+            }).catch(err => {
+                console.log(err);
+            })
+        }
+
+
+
+
+
+
+    </script>
