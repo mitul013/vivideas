@@ -59,8 +59,8 @@
                                 <th>${data.productName}</th>
                                 <th>${data.batchNumber}</th>
                                 <td><img src='uploads/${data.ProductImage}' height=50 width=50/></td>
-                                <th>${data.mfg.substring(10)}</th>
-                                <th>${data.exp.substring(10)}</th>
+                                <th>${data.mfg.substring(0,11)}</th>
+                                <th>${data.exp.substring(0,11)}</th>
                             </tr>`
                             details.innerHTML = row + `</tbody></table>`
                 }
